@@ -1,0 +1,19 @@
+Задача:
+  
+На сколько процентов менялось количество постов ежемесячно с 1 сентября по 31 декабря 2008 года? Отобразите таблицу со следующими полями:
+номер месяца;
+количество постов за месяц;
+процент, который показывает, насколько изменилось количество постов в текущем месяце по сравнению с предыдущим.
+Если постов стало меньше, значение процента должно быть отрицательным, если больше — положительным. Округлите значение процента до двух знаков после запятой.
+ 
+Решение:
+select
+*,
+round(((count_month / LAG(profile.count_month) OVER (order by profile.month_number) :: numeric) - 1) * 100.0,2)
+from (
+select
+EXTRACT(month from creation_date) as month_number,
+count(id) as count_month
+from stackoverflow.posts
+where EXTRACT(year from creation_date) = 2008 and EXTRACT(month from creation_date) between 9 and 12
+group by 1) as profile
